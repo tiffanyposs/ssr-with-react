@@ -8685,27 +8685,25 @@ function verifyPlainObject(value, displayName, methodName) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fetchUsers = exports.FETCH_USERS = undefined;
-
-var _axios = __webpack_require__(463);
-
-var _axios2 = _interopRequireDefault(_axios);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 var FETCH_USERS = exports.FETCH_USERS = 'fetch_users';
+// thunk gives 3 arguments
+// * dispatch
+// * getState
+// * api (this gets implemented when you pass it to the thunk.withExtraArgument method)
+// in this case it's the api instance of axios
 var fetchUsers = exports.fetchUsers = function fetchUsers() {
   return function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch) {
+    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(dispatch, getState, api) {
       var res;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
               _context.next = 2;
-              return _axios2.default.get('http://react-ssr-api.herokuapp.com/users/xss');
+              return api.get('/users');
 
             case 2:
               res = _context.sent;
@@ -8723,7 +8721,7 @@ var fetchUsers = exports.fetchUsers = function fetchUsers() {
       }, _callee, undefined);
     }));
 
-    return function (_x) {
+    return function (_x, _x2, _x3) {
       return _ref.apply(this, arguments);
     };
   }();
@@ -9027,6 +9025,10 @@ var _reactRedux = __webpack_require__(175);
 
 var _reactRouterConfig = __webpack_require__(454);
 
+var _axios = __webpack_require__(463);
+
+var _axios2 = _interopRequireDefault(_axios);
+
 var _Routes = __webpack_require__(460);
 
 var _Routes2 = _interopRequireDefault(_Routes);
@@ -9037,12 +9039,20 @@ var _reducers2 = _interopRequireDefault(_reducers);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// create a customized instance of axios
+var axiosInstance = _axios2.default.create({
+  baseURL: '/api' // default to using the base /api for all requests in this instance
+});
+
 // setup the store
 // pass in the reducers,
 // initial state,
 // and apply middleware
+// * Pass in axiosInstance to the thunk.withExtraArgument method
+// this will go to the action creator as an argument
 // startup point for client side application
-var store = (0, _redux.createStore)(_reducers2.default, window.INITIAL_STATE, (0, _redux.applyMiddleware)(_reduxThunk2.default));
+var store = (0, _redux.createStore)(_reducers2.default, window.INITIAL_STATE, (0, _redux.applyMiddleware)(_reduxThunk2.default.withExtraArgument(axiosInstance)) //
+);
 // instead of .render, use .hydrate which means,
 // "We know you already sent static stuff, now add all the events"
 // Pass in the browser side router
