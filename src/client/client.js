@@ -13,7 +13,7 @@ import reducers from './reducers';
 // pass in the reducers,
 // initial state,
 // and apply middleware
-const store = createStore(reducers, {}, applyMiddleware(thunk));
+const store = createStore(reducers, window.INITIAL_STATE, applyMiddleware(thunk));
 // instead of .render, use .hydrate which means,
 // "We know you already sent static stuff, now add all the events"
 // Pass in the browser side router

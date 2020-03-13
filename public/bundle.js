@@ -8705,7 +8705,7 @@ var fetchUsers = exports.fetchUsers = function fetchUsers() {
           switch (_context.prev = _context.next) {
             case 0:
               _context.next = 2;
-              return _axios2.default.get('http://react-ssr-api.herokuapp.com/users');
+              return _axios2.default.get('http://react-ssr-api.herokuapp.com/users/xss');
 
             case 2:
               res = _context.sent;
@@ -9042,7 +9042,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 // initial state,
 // and apply middleware
 // startup point for client side application
-var store = (0, _redux.createStore)(_reducers2.default, {}, (0, _redux.applyMiddleware)(_reduxThunk2.default));
+var store = (0, _redux.createStore)(_reducers2.default, window.INITIAL_STATE, (0, _redux.applyMiddleware)(_reduxThunk2.default));
 // instead of .render, use .hydrate which means,
 // "We know you already sent static stuff, now add all the events"
 // Pass in the browser side router

@@ -98,3 +98,7 @@ Pros:
 Cons:
 
 * A ton of extra code
+
+## Authentication
+
+Authentication can be thought of as a sort of contract between a browser and a server
