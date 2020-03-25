@@ -37,17 +37,21 @@ app.get('*', (req, res) => {
   // wait for all the data
   // by adding this setup, the data with load data will be send down
   // with the initial HTML request
-  Promise.all(promises).then(() => {
-    const context = {};
-    // all data requests are finished
-    // load data into the store
-    const content = renderer(req, store, context);
-    // if the content.notFound is true make it a 404
-    // this is set on the NotFoundPage page component
-    if (content.notFound) res.status(404);
-    // send response
-    res.send(content);
-  });
+  Promise.all(promises)
+    .then(() => {
+      const context = {};
+      // all data requests are finished
+      // load data into the store
+      const content = renderer(req, store, context);
+      // if the content.notFound is true make it a 404
+      // this is set on the NotFoundPage page component
+      if (content.notFound) res.status(404);
+      // send response
+      res.send(content);
+    })
+    .catch(() => {
+      // catch the promise
+    });
 
 });
 
