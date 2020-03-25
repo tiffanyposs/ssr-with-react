@@ -8,7 +8,6 @@ import renderer from './helpers/renderer';
 import createStore from './helpers/createStore';
 const app = express();
 
-
 const PORT = 3000;
 
 // if the browser ever makes a request to our renderer server
@@ -39,9 +38,15 @@ app.get('*', (req, res) => {
   // by adding this setup, the data with load data will be send down
   // with the initial HTML request
   Promise.all(promises).then(() => {
+    const context = {};
     // all data requests are finished
     // load data into the store
-    res.send(renderer(req, store));
+    const content = renderer(req, store, context);
+    // if the content.notFound is true make it a 404
+    // this is set on the NotFoundPage page component
+    if (content.notFound) res.status(404);
+    // send response
+    res.send(content);
   });
 
 });

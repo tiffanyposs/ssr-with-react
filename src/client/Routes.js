@@ -2,6 +2,7 @@ import React from 'react';
 import App from './App';
 import HomePage from './pages/HomePage';
 import UsersListPage from './pages/UsersListPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 // router setup with react-router-config library
 export default [
@@ -18,6 +19,11 @@ export default [
       {
         ...UsersListPage,
         path: '/users',
+      },
+      // react will show this component if react router
+      // does not find a matching route (404)
+      {
+        ...NotFoundPage,
       },
     ]
   }

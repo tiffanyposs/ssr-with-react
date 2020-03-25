@@ -197,6 +197,10 @@ var _UsersListPage = __webpack_require__(14);
 
 var _UsersListPage2 = _interopRequireDefault(_UsersListPage);
 
+var _NotFoundPage = __webpack_require__(24);
+
+var _NotFoundPage2 = _interopRequireDefault(_NotFoundPage);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // router setup with react-router-config library
@@ -206,7 +210,10 @@ exports.default = [_extends({}, _App2.default, {
     exact: true
   }), _extends({}, _UsersListPage2.default, {
     path: '/users'
-  })]
+  }),
+  // react will show this component if react router
+  // does not find a matching route (404)
+  _extends({}, _NotFoundPage2.default)]
 })];
 
 /***/ }),
@@ -290,9 +297,15 @@ app.get('*', function (req, res) {
   // by adding this setup, the data with load data will be send down
   // with the initial HTML request
   Promise.all(promises).then(function () {
+    var context = {};
     // all data requests are finished
     // load data into the store
-    res.send((0, _renderer2.default)(req, store));
+    var content = (0, _renderer2.default)(req, store, context);
+    // if the content.notFound is true make it a 404
+    // this is set on the NotFoundPage page component
+    if (content.notFound) res.status(404);
+    // send response
+    res.send(content);
   });
 });
 
@@ -402,27 +415,43 @@ var Header = function Header(_ref) {
   );
 
   return _react2.default.createElement(
-    'div',
+    'nav',
     null,
     _react2.default.createElement(
-      _reactRouterDom.Link,
-      { to: '/' },
-      'React SSR'
-    ),
-    _react2.default.createElement(
       'div',
-      null,
+      { className: 'nav-wrapper' },
       _react2.default.createElement(
         _reactRouterDom.Link,
-        { to: '/users' },
-        'Users'
+        { to: '/', className: 'brand-logo' },
+        'React SSR'
       ),
       _react2.default.createElement(
-        _reactRouterDom.Link,
-        { to: '/admins' },
-        'Admins'
-      ),
-      authButton
+        'ul',
+        { className: 'right' },
+        _react2.default.createElement(
+          'li',
+          null,
+          _react2.default.createElement(
+            _reactRouterDom.Link,
+            { to: '/users' },
+            'Users'
+          )
+        ),
+        _react2.default.createElement(
+          'li',
+          null,
+          _react2.default.createElement(
+            _reactRouterDom.Link,
+            { to: '/admins' },
+            'Admins'
+          )
+        ),
+        _react2.default.createElement(
+          'li',
+          null,
+          authButton
+        )
+      )
     )
   );
 };
@@ -455,18 +484,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var HomePage = function HomePage() {
   return _react2.default.createElement(
     'div',
-    null,
+    { className: 'center-align', style: { marginTop: '200px' } },
     _react2.default.createElement(
-      'div',
+      'h3',
       null,
-      'I\'m the best home component'
+      'Welcome'
     ),
     _react2.default.createElement(
-      'button',
-      { onClick: function onClick() {
-          return console.log('Hi there');
-        } },
-      'Click Me'
+      'p',
+      null,
+      'Check out these awesome features'
     )
   );
 };
@@ -599,7 +626,7 @@ var _Routes2 = _interopRequireDefault(_Routes);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (req, store) {
+exports.default = function (req, store, context) {
   // setup the route on the server side
   // pass the location to StaticRouter from the request
   var content = (0, _server.renderToString)(_react2.default.createElement(
@@ -607,7 +634,7 @@ exports.default = function (req, store) {
     { store: store },
     _react2.default.createElement(
       _reactRouterDom.StaticRouter,
-      { location: req.path, context: {} },
+      { location: req.path, context: context },
       _react2.default.createElement(
         'div',
         null,
@@ -621,7 +648,7 @@ exports.default = function (req, store) {
   // look for it in the 'public' folder
   // add the root id to connect it to the client.js file
   // serialize the store to prevent xss attack
-  return '\n    <html>\n      <head></head>\n      <body>\n        <div id="root">' + content + '</div>\n        <script>\n          window.INITIAL_STATE = ' + (0, _serializeJavascript2.default)(store.getState()) + '\n        </script>\n        <script src="bundle.js"></script>\n      </body>\n    </html>\n  ';
+  return '\n    <html>\n      <head>\n        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">\n      </head>\n      <body>\n        <div id="root">' + content + '</div>\n        <script>\n          window.INITIAL_STATE = ' + (0, _serializeJavascript2.default)(store.getState()) + '\n        </script>\n        <script src="bundle.js"></script>\n      </body>\n    </html>\n  ';
 };
 
 /***/ }),
@@ -768,6 +795,41 @@ exports.default = function () {
 };
 
 var _actions = __webpack_require__(1);
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _react = __webpack_require__(0);
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// 'staticContext' is magically renamed from the key 'context'
+// with the static router, won't exist on the browser side
+var NotFoundPage = function NotFoundPage(_ref) {
+  var _ref$staticContext = _ref.staticContext,
+      staticContext = _ref$staticContext === undefined ? {} : _ref$staticContext;
+
+  staticContext.notFound = true;
+  return _react2.default.createElement(
+    'h1',
+    null,
+    'Oops, route not found.'
+  );
+};
+
+exports.default = {
+  component: NotFoundPage
+};
 
 /***/ })
 /******/ ]);
