@@ -30,28 +30,38 @@ app.get('*', (req, res) => {
   // matchRoutes returns an array of components that are about the be rendered
   // map through them and if the loadData method is attached, then run it passing the store
   // the loadData will envoke the needed actions to load the data for the component
-  const promises = matchRoutes(Routes, req.path).map(({ route }) => {
-    return route.loadData ? route.loadData(store) : null;
-  });
+  const promises = matchRoutes(Routes, req.path)
+    .map(({ route }) => {
+      return route.loadData ? route.loadData(store) : null;
+    })
+    .map(promise => {
+      if (promise) {
+        return new Promise((resolve, reject) => {
+          // we always want to resolve the loadData because
+          // when we use Promise.all below it will
+          // not fail if 1 of the promises fail
+          promise.then(resolve).catch(resolve);
+        });
+      }
+    });
 
   // wait for all the data
   // by adding this setup, the data with load data will be send down
   // with the initial HTML request
-  Promise.all(promises)
-    .then(() => {
-      const context = {};
-      // all data requests are finished
-      // load data into the store
-      const content = renderer(req, store, context);
-      // if the content.notFound is true make it a 404
-      // this is set on the NotFoundPage page component
-      if (content.notFound) res.status(404);
-      // send response
-      res.send(content);
-    })
-    .catch(() => {
-      // catch the promise
-    });
+  Promise.all(promises).then(() => {
+    const context = {};
+    // all data requests are finished
+    // load data into the store
+    const content = renderer(req, store, context);
+    // if the content.notFound is true make it a 404
+    // this is set on the NotFoundPage page component
+
+    // if the context is url
+    if (context.url) return res.redirect(301, context.url);
+    if (context.notFound) res.status(404);
+    // send response
+    res.send(content);
+  });
 
 });
 
