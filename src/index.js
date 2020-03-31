@@ -50,12 +50,12 @@ app.get('*', (req, res) => {
   // with the initial HTML request
   Promise.all(promises).then(() => {
     const context = {};
+
     // all data requests are finished
     // load data into the store
     const content = renderer(req, store, context);
     // if the content.notFound is true make it a 404
     // this is set on the NotFoundPage page component
-
     // if the context is url
     if (context.url) return res.redirect(301, context.url);
     if (context.notFound) res.status(404);

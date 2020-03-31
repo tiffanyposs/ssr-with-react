@@ -29,6 +29,8 @@ function mapStateToProps({ admins }) {
 }
 
 export default {
-  component: connect(mapStateToProps, { fetchAdmins })(requireAuth(AdminsListPage)),
+  component: connect(mapStateToProps, { fetchAdmins })(
+    requireAuth(AdminsListPage)
+  ),
   loadData: ({ dispatch }) => dispatch(fetchAdmins()),
 }

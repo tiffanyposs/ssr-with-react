@@ -348,12 +348,12 @@ app.get('*', function (req, res) {
   // with the initial HTML request
   Promise.all(promises).then(function () {
     var context = {};
+
     // all data requests are finished
     // load data into the store
     var content = (0, _renderer2.default)(req, store, context);
     // if the content.notFound is true make it a 404
     // this is set on the NotFoundPage page component
-
     // if the context is url
     if (context.url) return res.redirect(301, context.url);
     if (context.notFound) res.status(404);
@@ -766,8 +766,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// higher order component to control auth requirement
-// on wrapped pages
 exports.default = function (ChildComponent) {
   var RequireAuth = function (_Component) {
     _inherits(RequireAuth, _Component);
@@ -781,11 +779,6 @@ exports.default = function (ChildComponent) {
     _createClass(RequireAuth, [{
       key: 'render',
       value: function render() {
-        /**
-          * false - user is not logged in
-          * null - user login is stull pending
-          * default - user is logged in, show page
-        */
         switch (this.props.auth) {
           case false:
             return _react2.default.createElement(_reactRouterDom.Redirect, { to: '/' });
@@ -884,6 +877,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 exports.default = function (req, store, context) {
   // setup the route on the server side
   // pass the location to StaticRouter from the request
+
   var content = (0, _server.renderToString)(_react2.default.createElement(
     _reactRedux.Provider,
     { store: store },

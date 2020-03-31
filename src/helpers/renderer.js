@@ -10,6 +10,7 @@ import Routes from '../client/Routes';
 export default (req, store, context) => {
   // setup the route on the server side
   // pass the location to StaticRouter from the request
+
   const content = renderToString(
     <Provider store={store}>
       <StaticRouter location={req.path} context={context}>
