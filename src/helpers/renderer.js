@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -19,6 +20,10 @@ export default (req, store, context) => {
     </Provider>
   );
 
+  // extract the Helmet properties set in the individual page components
+  // then place them in the <head> below
+  const helmet = Helmet.renderStatic();
+
   // stuff the content into an html body
   // link the bundle.js file, which will automatically
   // look for it in the 'public' folder
@@ -27,6 +32,8 @@ export default (req, store, context) => {
   return `
     <html>
       <head>
+        ${helmet.title.toString()}
+        ${helmet.meta.toString()}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
       </head>
       <body>
